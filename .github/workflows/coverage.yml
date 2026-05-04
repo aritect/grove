@@ -1,0 +1,32 @@
+name: Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1.10"
+
+      - uses: julia-actions/cache@v2
+
+      - name: Unit tests with coverage
+        run: julia --project=. -e "using Pkg; Pkg.test(; coverage=true)"
+
+      - name: Summarize coverage
+        env:
+          COVERAGE_MIN_PCT: "70"
+        run: julia --project=. bin/coverage/summary.jl
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
