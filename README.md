@@ -22,7 +22,7 @@ This means an agent running Grove cannot hallucinate progress. The state file ei
 ## Core ideas
 
 - Discovery and Delivery run in parallel [Dual-Track Agile, Cagan]. A work item cannot enter Delivery until every open question and unvalidated assumption that blocks it is resolved in Discovery.
-- Every executable unit has explicit acceptance criteria before code is written [HDD, Definition of Ready]. The DoR is not a checklist anyone can override — it is a boolean conjunction the CLI evaluates on every `status=progress` transition.
+- Every executable unit has explicit acceptance criteria before code is written [HDD, Definition of Ready]. The DoR is not a checklist anyone can override; it is a boolean conjunction the CLI evaluates on every `status=progress` transition.
 - Long-lived design choices are first-class artifacts [ADR, Nygard]. Decisions are immutable once accepted. They cannot be quietly revised; they can only be superseded by a new decision with a recorded rationale.
 - Open unknowns are first-class artifacts; agents declare them rather than pretend to know [Continuous Discovery; Cynefin]. A question tagged `chaotic` halts the agent and requires human resolution.
 - Assumptions are falsifiable gates, not comments. An assumption in state `invalidated_blocking` prevents any dependent work item from becoming ready. The agent cannot proceed by ignoring it.
@@ -150,7 +150,7 @@ Drives agent behaviour ([Protocol](skill/protocol.md) §5.2). If `chaotic`, stop
 
 ## How the state file works
 
-All state lives in `.grove/state.lock`, a single line-oriented text file with a SHA-256 checksum on every write. Any manual edit is detected immediately on the next CLI call and all operations are blocked until the file is repaired. The agent never reads or writes the file directly — only through CLI commands.
+All state lives in `.grove/state.lock`, a single line-oriented text file with a SHA-256 checksum on every write. Any manual edit is detected immediately on the next CLI call and all operations are blocked until the file is repaired. The agent never reads or writes the file directly; it only interacts through CLI commands.
 
 This design makes the entire workflow auditable and diff-friendly. Every transition is a single atomic write. The lock file can be committed to version control; its history is the history of the project's reasoning, not just its code.
 
