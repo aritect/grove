@@ -31,7 +31,7 @@ cynefin(n) = chaotic      → STOP; escalate to user; do not write code.
    - **greenfield**: start the Discovery loop (impact map, then Q / B / D / W).
    - **existing code**: start a refactor scan (creates `A-NN` and `W:refactor` items).
 
-The agent never reads `state.lock` directly. All reads go through `grove` ([06-cli.md](06-cli.md)).
+The agent never reads `state.lock` directly. All reads go through `grove` ([cli.md](cli.md)).
 
 ## 2.3 Discovery loop
 

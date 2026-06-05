@@ -1,4 +1,4 @@
-# 4. Rules
+# 5. Rules
 
 **Lock immutability.** `.grove/state.lock` is edited ONLY through the `grove` CLI. The file carries a SHA-256 checksum line. Any manual edit is detected on the next CLI invocation and the CLI refuses to proceed until the user runs `grove repair --confirm`. Do not bypass this; the `repair` command is an escape hatch for migrations, not a workflow.
 
@@ -28,7 +28,7 @@
 
 **Rejected is final.** A `rejected` W or `dropped` Q must not be re-opened without explicit user instruction. The rejection reason is the record.
 
-**Lazy retros.** Retros are NOT auto-created on `status(g) = verified`. When **`W → done`** pushes a linked goal to **`verified`**, the CLI prints a one-line **stderr** reminder to run `grove add r --goal=…` when ready. Add a **`notes`** line containing `--retro-deferred` on the goal to suppress the reminder ([checklist §8](checklist.md)).
+**Lazy retros.** Retros are NOT auto-created on `status(g) = verified`. When **`W → done`** pushes a linked goal to **`verified`**, the CLI prints a one-line **stderr** reminder to run `grove add r --goal=…` when ready. Add a **`notes`** line containing `--retro-deferred` on the goal to suppress the reminder ([checklist.md](checklist.md)).
 
 **Archival.** When a goal closes (`status = verified` and an `R-NN` with `goal = G-NN` is `final`), `grove archive G-NN` moves **`G` and every exclusively attached `w` / `d` / `q` / `b` / `a`** (see CLI reference) into the `:archive` block. Retrospectives stay active. Archived nodes are excluded from algebra/read paths by default. IDs are never reused; `grove add` keeps the global allocator.
 

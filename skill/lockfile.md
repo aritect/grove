@@ -1,8 +1,8 @@
-# 7. Lockfile specification
+# 6. Lockfile specification
 
 `.grove/state.lock` is the single source of truth for GROVE state. It is written and read only by the `grove` cli ([cli reference](cli.md)). Manual edits are detected and rejected.
 
-## 7.1 File envelope
+## 6.1 File envelope
 
 ```text
 @grove v1
@@ -27,14 +27,14 @@ When present (`N`,`K`,`W` are decimal integers ≥ 1, with `pad ≥ 2`), new IDs
 
 The CLI rejects any file whose recomputed checksum disagrees with line 3. `grove repair --confirm` recomputes and writes the new checksum.
 
-## 7.2 Lexical structure
+## 6.2 Lexical structure
 
 - One logical record per "block": a header line plus zero or more indented field lines.
 - Indentation is exactly two spaces. Nested prose lines (the `|` form) use four spaces.
 - Comments start with `#` at column 0 only. They are preserved on read but never created by the CLI outside the envelope.
 - Blank lines separate records. Multiple blank lines collapse to one on serialize.
 
-## 7.3 Record grammar
+## 6.3 Record grammar
 
 ```ebnf
 file       = magic NL comment NL checksum NL { NL } { record } [ archive ]
@@ -63,7 +63,7 @@ delimiter. Raw `|`, `\`, `"` are literal inside prose lines.
 
 `bareWord` matches `[a-zA-Z_][a-zA-Z0-9_-]*`. Quoted strings are required for any value that contains whitespace, `"`, or `\`. The CLI always quotes titles.
 
-## 7.4 Header attributes per kind
+## 6.4 Header attributes per kind
 
 | Kind | Required attrs | Optional attrs | Trailing title |
 | --- | --- | --- | --- |
@@ -82,7 +82,7 @@ Kind `a` (artifact) is materialised: it appears as a node record but its
 title and tags are user-set; its `status` is always derived (I₆) and is
 rejected by `grove set`.
 
-## 7.5 Field catalog
+## 6.5 Field catalog
 
 Recognised fields per node kind. Unknown fields are a parse error.
 
@@ -138,15 +138,15 @@ Recognised fields per node kind. Unknown fields are a parse error.
 
 | Field | Form | Meaning |
 | --- | --- | --- |
-| `fitness_target` | single line | Threshold / notation; semantics depend on header **`fitness_kind`** (§7.5.1). |
+| `fitness_target` | single line | Threshold / notation; semantics depend on header **`fitness_kind`** (§6.5.1). |
 | `fitness_current` | single line | CLI-derived sums for structured kinds (**except `manual`**); user-authored only for **`manual`**. |
-| `notes` | prose | Any goal notes; a line containing **`--retro-deferred`** suppresses the post-`done` lazy-retro stderr hint ([rules.md](../rules.md)). |
+| `notes` | prose | Any goal notes; a line containing **`--retro-deferred`** suppresses the post-`done` lazy-retro stderr hint ([rules.md](rules.md)). |
 
-### 7.5.1 Structured fitness (goals)
+### 6.5.1 Structured fitness (goals)
 
 Optional header attr **`fitness_kind`** ∈ **`count` \| `ratio` \| `boolean` \| `metric` \| `manual`**. Missing **`fitness_kind`** ⇒ legacy **`fitness="…"`** header string: denominator of first `d/d` token sets the integral threshold versus the sum of **`done`** work-item deltas (unchanged pre–structured behaviour).
 
-With **`fitness_kind`**, **`fitness_target`** and **`fitness_current`** are single-string fields (**§7** `single` form). **`grove fitness W-NN G-NN ±δ`** still stages on **`W`**; when **`W`** becomes **`done`**, the CLI refreshes each linked goal’s **`fitness_current`** (except **`manual`**) and may update **`status(g)`**.
+With **`fitness_kind`**, **`fitness_target`** and **`fitness_current`** are single-string fields (**§6** `single` form). **`grove fitness W-NN G-NN ±δ`** still stages on **`W`**; when **`W`** becomes **`done`**, the CLI refreshes each linked goal’s **`fitness_current`** (except **`manual`**) and may update **`status(g)`**.
 
 | `fitness_kind` | `fitness_target` | Auto `status(g)` from sum of done deltas |
 | --- | --- | --- |
@@ -188,7 +188,7 @@ that drives DoR; `theme` is a single-A membership that affects derivation
 I₆; `fitness` carries deltas, not a relationship). Any pure relationship
 (B tests Q, B targets W, D supersedes D) is an edge.
 
-## 7.7 Canonical ordering
+## 6.6 Canonical ordering
 
 Serialization is deterministic so git diffs are stable:
 
@@ -202,9 +202,9 @@ Serialization is deterministic so git diffs are stable:
 8. Edge records sorted by `(from, label, to)` lexicographically.
 9. Optional `:archive` block, then archived records in the same order.
 
-Within a record, fields appear in the order listed in §7.5 tables. Prose lines preserve insertion order.
+Within a record, fields appear in the order listed in §6.5 tables. Prose lines preserve insertion order.
 
-## 7.8 Example
+## 6.7 Example
 
 ```text
 @grove v1

@@ -1,14 +1,10 @@
-# 6. CLI reference
+# 3. CLI reference
 
-Invocation: `julia --project=<grove-root> <grove-root>/bin/grove.jl <command> [args...]`. For brevity, all examples below use `grove` as the bound name. Recommended shell alias:
-
-```bash
-alias grove='julia --project=/path/to/grove /path/to/grove/bin/grove.jl'
-```
+Invocation: `grove <command> [args...]`.
 
 The CLI reads and writes `.grove/state.lock` and `.grove/index.md` relative to the current working directory. Override with `--root=<path>` (root must contain or will contain `.grove/`).
 
-## 6.1 Exit codes
+## 3.1 Exit codes
 
 | Code | Meaning |
 | --- | --- |
@@ -19,7 +15,7 @@ The CLI reads and writes `.grove/state.lock` and `.grove/index.md` relative to t
 | 4 | Guard failure (DoR, WIP, evidence missing, etc.). |
 | 5 | Not found (unknown ID). |
 
-## 6.2 Read commands
+## 3.2 Read commands
 
 **`grove status`:** session-aware overview. Lists: stale-token `progress` W's
 (see [protocol §2.6](protocol.md#26-session-tokens-and-interrupted-work)),
@@ -81,17 +77,17 @@ source; journal rows use middle field `journal`). An `<ID>` filter also matches
 inverse payloads in journal records (so IDs only referenced there still work).
 `--limit=0` disables the cap.
 
-**`grove check`:** run all invariants I₁..I₁₁ plus checksum and stale-index checks. Exit code 0 / 2 / 3 as listed in §6.1.
+**`grove check`:** run all invariants I₁..I₁₁ plus checksum and stale-index checks. Exit code 0 / 2 / 3 as listed in §3.1.
 
-**`--json` on read commands:** every read command in §6.2 prints **one JSON object** on stdout (UTF-8) instead of the human-oriented text. Keys always include **`command`** (string, same as the subcommand). Mutate commands ignore `--json`. Exit codes are unchanged; for **`check`**, failures still return **3** with **`"ok": false`** and an **`errors`** array in the JSON body (no duplicate error lines on stderr). Schema details: §6.4.1.
+**`--json` on read commands:** every read command in §3.2 prints **one JSON object** on stdout (UTF-8) instead of the human-oriented text. Keys always include **`command`** (string, same as the subcommand). Mutate commands ignore `--json`. Exit codes are unchanged; for **`check`**, failures still return **3** with **`"ok": false`** and an **`errors`** array in the JSON body (no duplicate error lines on stderr). Schema details: §3.4.1.
 
-## 6.3 Mutate commands
+## 3.3 Mutate commands
 
 **All mutate commands** re-serialize the lock with a fresh checksum and call `render` implicitly.
 
 **`grove init`:** creates `.grove/state.lock`, `.grove/index.md`, `.grove/glossary.md`. Idempotent: refuses if the lock already exists.
 
-Optional allocation tuning (persisted once in the optional `# @grove-id stride=…` lock comment; see [§7.1 Lockfile envelope](lockfile.md#71-file-envelope)):
+Optional allocation tuning (persisted once in the optional `# @grove-id stride=…` lock comment; see [§6.1 Lockfile envelope](lockfile.md#61-file-envelope)):
 
 - `--id-stride=<N>` (default `1`): additive gap between successive numeric suffixes (`N≥1`).
 - `--id-offset=<K>` (default `1`): first suffix when a family allocator is empty (`K≥1`).
@@ -130,7 +126,7 @@ The CLI prints the assigned ID.
 
 **`grove evidence <W-NN> "…"`:** appends a line to the W's `evidence` field. Sugar for `grove field W-NN evidence add "…"`.
 
-**`grove fitness <W-NN> <G-NN> <±delta>`:** stages a delta on **`W`** toward **`G`** (I₁₀ at `done`). If **`G`** carries structured **`fitness_kind`**, `index` / lock fields **`fitness_current`** and **`status(G)`** refresh when **`W`** completes (see [lockfile §7.5.1](lockfile.md#751-structured-fitness-goals)). Multiple calls overwrite the staged delta for the same (W, G) pair. Use `+0` for enabling work (CLI requires a non-empty `why` in W when delta=0).
+**`grove fitness <W-NN> <G-NN> <±delta>`:** stages a delta on **`W`** toward **`G`** (I₁₀ at `done`). If **`G`** carries structured **`fitness_kind`**, `index` / lock fields **`fitness_current`** and **`status(G)`** refresh when **`W`** completes (see [lockfile §6.5.1](lockfile.md#651-structured-fitness-goals)). Multiple calls overwrite the staged delta for the same (W, G) pair. Use `+0` for enabling work (CLI requires a non-empty `why` in W when delta=0).
 
 **`grove archive <G-NN>`:** moves the goal and every `w` / `d` / `q` / `b` / `a` whose **goal-reference set equals `{G-NN}`** (`goals` fields + propagation along `implements`, `produces`, `asks`, `tests`, `targets`, `causes`, `theme`, bidirectional `supersedes`) and that is **affinity-connected** to `G-NN` (`goals` backlinks + undirected structural edges among those nodes only). Shared resources (one `d` tied to work under two goals via `implements`, etc.) **stay active**. `:r` records remain outside `:archive`. Refuses when `status(G) ≠ verified`, there is no `final` retrospective with `goal=G-NN`, or session guards fail on `progress` work listing `G-NN`.
 
@@ -142,18 +138,18 @@ The CLI prints the assigned ID.
 
 **`grove undo [--steps=N]`:** reverts the last N journaled mutate operations applied in inverse order by replaying stored inverse ops onto the lock state, then **truncates** the last N lines off `.grove/journal.log` (default `N=1`). Undo does **not** append another journal entry; there is no built-in redo. Other mutators (`init`, `archive`, `repair`) do not write journal lines.
 
-## 6.4 Global flags
+## 3.4 Global flags
 
 - `--root=<path>`: base directory containing `.grove/`.
 - `--quiet`: suppress info; only errors.
-- `--json`: machine-readable output for read commands (§6.4.1).
+- `--json`: machine-readable output for read commands (§3.4.1).
 - `--no-render`: skip auto-render after a mutate (debugging only).
 - `--session=<token>`: override the session token (default: `GROVE_SESSION` if set, else `host:hex16(sha256(norm_root))` from env `COMPUTERNAME`/`HOSTNAME`/`HOST`).
 - `--id-stride=<N>` / `--id-offset=<N>`: only valid on `grove init`; sets
   the worktree's ID allocator to step `N` starting from `offset` to avoid
   collisions on parallel branches (see merge protocol).
 
-### 6.4.1 `--json` command shapes
+### 3.4.1 `--json` command shapes
 
 Each response is a single JSON object. Types: **string**, **bool**, **array**, **object** (string keys).
 
@@ -174,7 +170,7 @@ Each response is a single JSON object. Types: **string**, **bool**, **array**, *
 | `status` | `progress`: session rows; `alignment_triggers`; `invariants`: `{ ok, messages }`. |
 | `diff` | `since` (git ref), `semantic_change`, `nodes` (per-kind `added` / `removed` / `changed`), `edges`: `{ added, removed }` with `{ from, label, to }`; same semantic rules as textual diff (`lock_structural_lines`). |
 
-## 6.5 Examples
+## 3.5 Examples
 
 ```bash
 grove init

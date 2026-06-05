@@ -58,13 +58,10 @@ grove check                             # all invariants; use in pre-commit
 1. [Formal model](model.md): nodes, edges, statuses, invariants I₁..I₁₀, DoR.
 2. [Protocol](protocol.md): workflow, cynefin gating, session start, discovery / delivery loops, alignment triggers.
 3. [CLI](cli.md): full CLI reference.
-
-**On demand (read when relevant):**
-
 4. [Evidence](evidence.md): DoD per work-item type.
 5. [Rules](rules.md): operational rules, merge protocol, pre-commit hook.
 6. [Lockfile](lockfile.md): grammar; needed only for tooling outside the CLI.
-7. [Typography](typography.md): prose-field style.
+7. [Typography](typography.md): formatting rules for all prose fields, entity titles, and other text content. Must be followed consistently.
 8. [Checklist](checklist.md): end-of-session quality gate.
 9. [Diagrams](diagrams/): mermaid for dual-track, top-level workflow, palette.
 

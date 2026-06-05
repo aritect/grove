@@ -71,7 +71,7 @@ status(a) ∈ { open, done }   (derived per I₆; never set manually)
 cynefin(n) ∈ { clear, complicated, complex, chaotic }
 ```
 
-Drives agent behaviour ([Protocol](protocol.md) §5.2). If `chaotic`, stop and escalate.
+Drives agent behaviour ([Protocol](protocol.md) §2.2). If `chaotic`, stop and escalate.
 
 ## 1.6 Core invariants
 
@@ -154,4 +154,4 @@ set them. They are used by `grove log`, `grove diff`, and metric exports.
 `refactor`). Further norms (e.g. spike vs production code, failing-test-first for bugs) are
 protocol guidance, not additional CLI conjuncts unless recorded in AC / evidence_strategy.
 
-`repro` and `exit` are first-class prose fields on `w` (see lockfile §7.5).
+`repro` and `exit` are first-class prose fields on `w` (see lockfile §6.5).
